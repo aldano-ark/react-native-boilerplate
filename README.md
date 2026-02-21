@@ -1,97 +1,279 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# React Native Boilerplate
 
-# Getting Started
+A React Native CLI starter template with TypeScript, React Navigation 7, Yarn workspaces, custom fonts (Montserrat), and Android product flavors pre-configured.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+## Table of Contents
 
-## Step 1: Start Metro
+- [Prerequisites](#prerequisites)
+- [Getting Started](#getting-started)
+- [Project Structure](#project-structure)
+- [Customization](#customization)
+  - [Rename the App](#rename-the-app)
+  - [Update Fonts](#update-fonts)
+  - [Android Product Flavors](#android-product-flavors)
+- [Running the App](#running-the-app)
+- [Scripts](#scripts)
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+---
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+## Prerequisites
 
-```sh
-# Using npm
-npm start
+- Node.js >= 22.11.0
+- Yarn (workspaces enabled)
+- Ruby (for CocoaPods on iOS)
+- Xcode (iOS)
+- Android Studio + JDK (Android)
 
-# OR using Yarn
+---
+
+## Getting Started
+
+```bash
+# Install dependencies
+yarn install
+
+# iOS — install native pods
+cd ios && pod install && cd ..
+
+# Start Metro bundler
 yarn start
 ```
 
-## Step 2: Build and run your app
+---
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+## Project Structure
 
-### Android
-
-```sh
-# Using npm
-npm run android
-
-# OR using Yarn
-yarn android
 ```
+src/
+├── Main.tsx                          # App root with NavigationContainer
+├── app/
+│   └── screens/                      # Screen components (@app/screens/*)
+└── packages/
+    ├── react-navigation/             # Stacks and navigators (@packages/react-navigation)
+    └── react-native-ui/              # Shared UI components
+```
+
+Path aliases are configured in [tsconfig.json](tsconfig.json) and [babel.config.js](babel.config.js).
+
+---
+
+## Customization
+
+### Rename the App
+
+Replace every occurrence of `ReactNativeBoilerplate` / `reactnativeboilerplate` with your app name.
+
+#### 1. `app.json`
+
+```json
+{
+  "name": "MyApp",
+  "displayName": "My App"
+}
+```
+
+#### 2. Android
+
+**`android/settings.gradle`** — root project name:
+
+```groovy
+rootProject.name = 'MyApp'
+```
+
+**`android/app/build.gradle`** — namespace and application ID:
+
+```groovy
+android {
+    namespace "com.myapp"
+    defaultConfig {
+        applicationId "com.myapp"
+        ...
+    }
+}
+```
+
+**`android/app/src/main/res/values/strings.xml`** — default app name (used as fallback when no flavor is active):
+
+```xml
+<string name="app_name">My App</string>
+```
+
+> The per-flavor display names are set via `resValue` in each `productFlavors` block inside `android/app/build.gradle`. See [Android Product Flavors](#android-product-flavors).
+
+**`android/app/src/main/java/`** — rename the package directory from `com/reactnativeboilerplate/` to `com/myapp/` and update the `package` declaration at the top of `MainActivity.kt` and `MainApplication.kt`.
+
+#### 3. iOS
+
+**`ios/ReactNativeBoilerplate/Info.plist`** — display name:
+
+```xml
+<key>CFBundleDisplayName</key>
+<string>My App</string>
+```
+
+**Xcode** — open `ios/ReactNativeBoilerplate.xcodeproj`, select the target, and update:
+
+- Target name
+- Bundle Identifier (e.g. `com.myapp`)
+- `MARKETING_VERSION` and `CURRENT_PROJECT_VERSION` in Build Settings
+
+**`ios/Podfile`** — target name must match the Xcode target:
+
+```ruby
+target 'MyApp' do
+  ...
+end
+```
+
+After renaming the iOS target/folder, re-run:
+
+```bash
+cd ios && pod install
+```
+
+---
+
+### Update Fonts
+
+The boilerplate ships with the full **Montserrat** family. Font files live in `src/assets/fonts/`.
+
+#### Replace or add fonts
+
+1. **Add font files** to `src/assets/fonts/` (e.g. `Inter-Regular.ttf`).
+
+2. **Android** — copy the font files to `android/app/src/main/assets/fonts/`:
+
+   ```bash
+   cp src/assets/fonts/Inter-Regular.ttf android/app/src/main/assets/fonts/
+   ```
+
+   Android resolves fonts from this directory automatically — no further native changes needed.
+
+3. **iOS** — two steps:
+
+   a. Add the font files to the Xcode project:
+
+   - In Xcode, right-click on the `ReactNativeBoilerplate` group → **Add Files to "ReactNativeBoilerplate"**
+   - Select the font files and check **"Add to target"**
+
+   b. Register each font in `ios/ReactNativeBoilerplate/Info.plist` under `UIAppFonts`:
+
+   ```xml
+   <key>UIAppFonts</key>
+   <array>
+       <string>Inter-Regular.ttf</string>
+       <!-- add more variants here -->
+   </array>
+   ```
+
+4. **Run** `cd ios && pod install` then rebuild.
+
+5. **Use the font in JS** — use the PostScript name (usually `FontFamily-Weight`):
+   ```tsx
+   <Text style={{ fontFamily: 'Inter-Regular' }}>Hello</Text>
+   ```
+   > Tip: Use `Font.loadAsync` from expo-font or check the PostScript name in Font Book (macOS) if unsure of the exact name.
+
+#### Remove unused fonts
+
+To remove the default Montserrat fonts:
+
+- Delete the `.ttf` files from `src/assets/fonts/`
+- Remove their entries from `ios/ReactNativeBoilerplate/Info.plist` (`UIAppFonts` array)
+- Remove them from the Xcode project (select files → **Delete** → **Move to Trash**)
+- Delete them from `android/app/src/main/assets/fonts/`
+
+---
+
+### Android Product Flavors
+
+Three flavors are configured in `android/app/build.gradle`:
+
+| Flavor        | Suffix   | App Name          | Version Name |
+| ------------- | -------- | ----------------- | ------------ |
+| `development` | `.sit`   | Boilerplate (SIT) | 1.0.0-SIT    |
+| `staging`     | `.uat`   | Boilerplate (UAT) | 1.0.0-UAT    |
+| `production`  | _(none)_ | Boilerplate       | 1.0.0        |
+
+Each flavor produces a unique `applicationId`, so all three can be installed on the same device simultaneously.
+
+#### Modify a flavor
+
+Edit the `productFlavors` block in `android/app/build.gradle`:
+
+```groovy
+productFlavors {
+    development {
+        dimension "default"
+        applicationIdSuffix ".sit"
+        resValue "string", "app_name", "My App (SIT)"
+        versionCode 1
+        versionName "1.0.0-SIT"
+    }
+    staging {
+        dimension "default"
+        applicationIdSuffix ".uat"
+        resValue "string", "app_name", "My App (UAT)"
+        versionCode 1
+        versionName "1.0.0-UAT"
+    }
+    production {
+        dimension "default"
+        resValue "string", "app_name", "My App"
+        versionCode 1
+        versionName "1.0.0"
+    }
+}
+```
+
+#### Add a new flavor
+
+1. Add a new entry in `productFlavors`.
+2. Add it to `debuggableVariants` in the `react { }` block so Metro bundler works correctly in debug:
+   ```groovy
+   debuggableVariants = ["developmentDebug", "developmentDebugOptimized", "stagingDebug", "stagingDebugOptimized", "prodDebug", "prodDebugOptimized", "newFlavorDebug", "newFlavorDebugOptimized"]
+   ```
+3. Run with the new flavor (see [Running the App](#running-the-app)).
+
+---
+
+## Running the App
 
 ### iOS
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
-
-```sh
-bundle install
-```
-
-Then, and every time you update your native dependencies, run:
-
-```sh
-bundle exec pod install
-```
-
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
-
-```sh
-# Using npm
-npm run ios
-
-# OR using Yarn
+```bash
 yarn ios
 ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+### Android — default flavor (`development`)
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+```bash
+yarn android
+```
 
-## Step 3: Modify your app
+### Android — specific flavor
 
-Now that you have successfully run the app, let's make changes!
+```bash
+# Development (SIT)
+yarn react-native run-android --mode developmentDebug
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+# Staging (UAT)
+yarn react-native run-android --mode stagingDebug
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+# Production
+yarn react-native run-android --mode productionDebug
+```
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+Or use Android Studio: **Build > Select Build Variant** → choose the desired flavor + build type.
 
-## Congratulations! :tada:
+---
 
-You've successfully run and modified your React Native App. :partying_face:
+## Scripts
 
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+| Command        | Description                                            |
+| -------------- | ------------------------------------------------------ |
+| `yarn start`   | Start Metro bundler                                    |
+| `yarn ios`     | Build and run on iOS simulator                         |
+| `yarn android` | Build and run on Android emulator (development flavor) |
+| `yarn test`    | Run Jest tests                                         |
+| `yarn lint`    | Run ESLint                                             |
