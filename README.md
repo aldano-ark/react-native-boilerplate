@@ -1,6 +1,6 @@
 # React Native Boilerplate
 
-A React Native CLI starter template with TypeScript, React Navigation 7, Yarn workspaces, custom fonts (Montserrat), and Android product flavors pre-configured.
+A React Native CLI starter template with TypeScript, React Navigation 7, NPM (>= 9.0.0) workspaces, custom fonts (Montserrat), and Android product flavors pre-configured.
 
 ## Table of Contents
 
@@ -19,7 +19,7 @@ A React Native CLI starter template with TypeScript, React Navigation 7, Yarn wo
 ## Prerequisites
 
 - Node.js >= 22.11.0
-- Yarn (workspaces enabled)
+- NPM >= 9.0.0 (workspaces enabled)
 - Ruby (for CocoaPods on iOS)
 - Xcode (iOS)
 - Android Studio + JDK (Android)
@@ -30,13 +30,13 @@ A React Native CLI starter template with TypeScript, React Navigation 7, Yarn wo
 
 ```bash
 # Install dependencies
-yarn install
+npm run install
 
 # iOS — install native pods
 cd ios && pod install && cd ..
 
 # Start Metro bundler
-yarn start
+npm run start
 ```
 
 ---
@@ -242,26 +242,26 @@ productFlavors {
 ### iOS
 
 ```bash
-yarn ios
+npm run ios
 ```
 
 ### Android — default flavor (`development`)
 
 ```bash
-yarn android
+npm run android
 ```
 
 ### Android — specific flavor
 
 ```bash
 # Development (SIT)
-yarn react-native run-android --mode developmentDebug
+npm run react-native run-android --mode developmentDebug
 
 # Staging (UAT)
-yarn react-native run-android --mode stagingDebug
+npm run react-native run-android --mode stagingDebug
 
 # Production
-yarn react-native run-android --mode productionDebug
+npm run react-native run-android --mode productionDebug
 ```
 
 Or use Android Studio: **Build > Select Build Variant** → choose the desired flavor + build type.
@@ -270,10 +270,10 @@ Or use Android Studio: **Build > Select Build Variant** → choose the desired f
 
 ## Scripts
 
-| Command        | Description                                            |
-| -------------- | ------------------------------------------------------ |
-| `yarn start`   | Start Metro bundler                                    |
-| `yarn ios`     | Build and run on iOS simulator                         |
-| `yarn android` | Build and run on Android emulator (development flavor) |
-| `yarn test`    | Run Jest tests                                         |
-| `yarn lint`    | Run ESLint                                             |
+| Command           | Description                                            |
+| ----------------- | ------------------------------------------------------ |
+| `npm run start`   | Start Metro bundler                                    |
+| `npm run ios`     | Build and run on iOS simulator                         |
+| `npm run android` | Build and run on Android emulator (development flavor) |
+| `npm run test`    | Run Jest tests                                         |
+| `npm run lint`    | Run ESLint                                             |

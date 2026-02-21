@@ -44,13 +44,13 @@ Run these checks after every implementation step:
 
 ```bash
 # Type check
-yarn tsc --noEmit
+npm run tsc --noEmit
 
 # Lint
-yarn lint
+npm run lint
 
 # Tests
-yarn test
+npm run test
 ```
 
 Fix all errors before moving to the next step. Do not suppress errors with `// @ts-ignore` or `eslint-disable`.
