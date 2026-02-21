@@ -1,7 +1,13 @@
 {
   "extends": "@react-native/typescript-config",
   "compilerOptions": {
-    "types": ["jest"]
+    "types": ["jest"],
+    "moduleSuffixes": [".android", ".ios", ""],
+    "baseUrl": ".",
+    "paths": {
+      "@app/screens/*": ["src/app/screens/*"],
+      "@packages/react-navigation": ["src/packages/react-navigation/index.ts"]
+    }
   },
   "include": ["**/*.ts", "**/*.tsx"],
   "exclude": ["**/node_modules", "**/Pods"]

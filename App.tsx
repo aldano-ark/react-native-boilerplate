@@ -1,5 +1,6 @@
 import { StatusBar, useColorScheme } from 'react-native';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import Main from './src/Main';
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
@@ -7,6 +8,9 @@ function App() {
   return (
     <SafeAreaProvider>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
+      <SafeAreaView style={{ flex: 1 }}>
+        <Main />
+      </SafeAreaView>
     </SafeAreaProvider>
   );
 }
