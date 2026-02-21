@@ -51,6 +51,8 @@
   },
   "workspaces": [
     "src/app/screens",
-    "src/packages/react-navigation"
+    "src/app/modules",
+    "src/packages/react-navigation",
+    "src/packages/react-native-ui"
   ]
 }
