@@ -1,1 +1,1 @@
-export { default as HomeStack } from './HomeStack';
+export { default as RootStackNavigator } from './RootStackNavigator';

@@ -52,6 +52,7 @@
   "workspaces": [
     "src/app/screens",
     "src/app/modules",
+    "src/app/navigation",
     "src/packages/react-navigation",
     "src/packages/react-native-ui"
   ]

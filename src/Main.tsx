@@ -1,5 +1,5 @@
 import { NavigationContainer } from '@react-navigation/native';
-import { HomeStack } from '@packages/react-navigation';
+import HomeStack from '@app/navigation/HomeStack';
 
 export default function Main() {
   return (

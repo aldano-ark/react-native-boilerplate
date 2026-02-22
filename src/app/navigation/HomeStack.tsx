@@ -1,5 +1,5 @@
 import HomeScreen from '@app/screens/HomeScreen';
-import RootStackNavigator from './RootStackNavigator';
+import { RootStackNavigator } from '@packages/react-navigation';
 
 const HomeStack = () => {
   return (
