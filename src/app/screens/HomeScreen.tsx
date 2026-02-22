@@ -18,13 +18,13 @@ export default function HomeScreen() {
       </Text>
       <Spacer size={8} />
 
-      <View>
+      {__DEV__ && (
         <Button
-          label="Explore the demo"
+          label="View UI Components"
           rightIcon="arrow-right"
           onPress={() => navigation.navigate('DemoIndex')}
         />
-      </View>
+      )}
     </View>
   );
 }
