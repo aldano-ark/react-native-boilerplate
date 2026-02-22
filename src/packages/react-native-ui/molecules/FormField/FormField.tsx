@@ -1,4 +1,3 @@
-import React from 'react';
 import { TextInput } from '../../atoms/TextInput';
 import type { FormFieldProps } from './FormField.types';
 

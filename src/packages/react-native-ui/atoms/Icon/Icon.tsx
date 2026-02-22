@@ -1,4 +1,3 @@
-import React from 'react';
 import FontAwesome6 from '@react-native-vector-icons/fontawesome6';
 import { useTheme } from '@packages/react-native-ui/theme';
 import type { IconProps } from './Icon.types';
@@ -19,7 +18,6 @@ export function Icon({
   const resolvedColor = color ?? colors.iconDefault;
   const mappedStyle = iconStyleMap[iconStyle];
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (
     <FontAwesome6
       iconStyle={mappedStyle}
