@@ -1,7 +1,10 @@
 import React from 'react';
 import type { ComponentType } from 'react';
 import HomeScreen from '@app/screens/HomeScreen';
-import { RootStackNavigator } from '@packages/react-navigation';
+import {
+  RootStackNavigator,
+  NavigationHeader,
+} from '@packages/react-navigation';
 
 type AnyComponent = ComponentType<any>;
 
@@ -9,7 +12,10 @@ const HomeStack = () => {
   return (
     <RootStackNavigator.Navigator
       initialRouteName="Home"
-      screenOptions={{ headerShown: false }}
+      screenOptions={{
+        headerShown: false,
+        header: NavigationHeader,
+      }}
     >
       <RootStackNavigator.Screen name="Home" component={HomeScreen} />
 
