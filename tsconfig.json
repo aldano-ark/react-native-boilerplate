@@ -8,6 +8,7 @@
       "@app/screens/*": ["src/app/screens/*"],
       "@app/modules/*": ["src/app/modules/*"],
       "@app/navigation/*": ["src/app/navigation/*"],
+      "@packages/react-native-ui": ["src/packages/react-native-ui/index.ts"],
       "@packages/react-native-ui/*": ["src/packages/react-native-ui/*"],
       "@packages/react-navigation": ["src/packages/react-navigation/index.ts"]
     }
