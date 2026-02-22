@@ -1,6 +1,11 @@
 import { StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { useTheme, Text, Button, Spacer } from '@packages/react-native-ui';
+import {
+  useTheme,
+  TranslatedText,
+  Button,
+  Spacer,
+} from '@packages/react-native-ui';
 import type { RootNavigationProp } from '@app/navigation/navigationTypes';
 
 export default function HomeScreen() {
@@ -9,21 +14,24 @@ export default function HomeScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <Text variant="heading2" align="center">
-        React Native Boilerplate
-      </Text>
+      <TranslatedText tKey="home.title" variant="heading2" align="center" />
       <Spacer size={2} />
-      <Text variant="body" color={colors.textSecondary} align="center">
-        A starting point for your next app.
-      </Text>
+      <TranslatedText
+        tKey="home.subtitle"
+        variant="body"
+        color={colors.textSecondary}
+        align="center"
+      />
       <Spacer size={8} />
 
       {__DEV__ && (
-        <Button
-          label="View UI Components"
-          rightIcon="arrow-right"
-          onPress={() => navigation.navigate('DemoIndex')}
-        />
+        <View>
+          <Button
+            label="View UI Components"
+            rightIcon="arrow-right"
+            onPress={() => navigation.navigate('DemoIndex')}
+          />
+        </View>
       )}
     </View>
   );

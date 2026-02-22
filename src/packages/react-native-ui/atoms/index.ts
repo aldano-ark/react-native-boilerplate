@@ -1,6 +1,7 @@
 export * from './Spacer';
 export * from './Divider';
 export * from './Text';
+export * from './TranslatedText';
 export * from './Icon';
 export * from './Button';
 export * from './TextInput';

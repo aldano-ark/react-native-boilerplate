@@ -10,7 +10,9 @@
       "@app/navigation/*": ["src/app/navigation/*"],
       "@packages/react-native-ui": ["src/packages/react-native-ui/index.ts"],
       "@packages/react-native-ui/*": ["src/packages/react-native-ui/*"],
-      "@packages/react-navigation": ["src/packages/react-navigation/index.ts"]
+      "@packages/react-navigation": ["src/packages/react-navigation/index.ts"],
+      "@packages/i18n": ["src/packages/i18n/index.ts"],
+      "@packages/i18n/*": ["src/packages/i18n/*"]
     }
   },
   "include": ["**/*.ts", "**/*.tsx"],

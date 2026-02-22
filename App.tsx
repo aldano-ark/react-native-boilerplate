@@ -1,3 +1,4 @@
+import '@packages/i18n';
 import { StatusBar, StyleSheet } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { ThemeProvider, useTheme } from '@packages/react-native-ui';
