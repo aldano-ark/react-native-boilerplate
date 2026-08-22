@@ -57,6 +57,9 @@
 		<string>Montserrat-Italic.ttf</string>
 		<string>Montserrat-SemiBoldItalic.ttf</string>
 		<string>Montserrat-ExtraBoldItalic.ttf</string>
+		<string>FontAwesome6_Brands.ttf</string>
+		<string>FontAwesome6_Regular.ttf</string>
+		<string>FontAwesome6_Solid.ttf</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
