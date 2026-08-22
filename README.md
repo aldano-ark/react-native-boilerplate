@@ -7,6 +7,7 @@ A React Native 0.87 CLI starter template with TypeScript, React Navigation 7, NP
 - [Prerequisites](#prerequisites)
 - [Getting Started](#getting-started)
 - [Project Structure](#project-structure)
+  - [Path aliases](#path-aliases)
 - [Customization](#customization)
   - [Rename the App](#rename-the-app)
   - [Update Fonts](#update-fonts)
@@ -30,31 +31,55 @@ A React Native 0.87 CLI starter template with TypeScript, React Navigation 7, NP
 ## Getting Started
 
 ```bash
-# Install dependencies
-npm run install
+# Install dependencies (also links the workspace aliases)
+npm install
 
 # iOS — install native pods
-cd ios && pod install && cd ..
+cd ios && bundle install && bundle exec pod install && cd ..
 
 # Start Metro bundler
-npm run start
+npm start
 ```
+
+> The `android:*` run scripts pass `--no-packager`, so Metro must already be running in another terminal.
 
 ---
 
 ## Project Structure
 
 ```
+App.tsx                               # Root providers: SafeAreaProvider → ThemeProvider
 src/
-├── Main.tsx                          # App root with NavigationContainer
+├── Main.tsx                          # NavigationContainer + HomeStack
+├── assets/fonts/                     # Montserrat family (linked via react-native.config.js)
 ├── app/
-│   └── screens/                      # Screen components (@app/screens/*)
+│   ├── screens/                      # Screen components (@app/screens/*)
+│   ├── navigation/                   # Routes: HomeStack + RootStackParamList (@app/navigation/*)
+│   └── modules/                      # Placeholder for feature modules (@app/modules/*)
 └── packages/
-    ├── react-navigation/             # Stacks and navigators (@packages/react-navigation)
-    └── react-native-ui/              # Shared UI components
+    ├── react-navigation/             # Navigator primitives + NavigationHeader — no routes
+    ├── react-native-ui/              # Atoms / molecules / organisms + theme
+    └── i18n/                         # i18next init and useTranslation
 ```
 
-Path aliases are configured in [tsconfig.json](tsconfig.json) and [babel.config.js](babel.config.js).
+Routes live in `@app/navigation`; `@packages/react-navigation` deliberately holds only the navigator
+primitive so the UI layer stays route-agnostic.
+
+### Path aliases
+
+There is **no babel module-resolver**. `@app/*` and `@packages/*` resolve at runtime through npm
+workspace symlinks — each aliased directory is a workspace whose `package.json` declares the scoped
+name. [tsconfig.json](tsconfig.json) `paths` only mirrors that for the TypeScript compiler.
+
+Adding a new alias needs all four:
+
+1. `src/<path>/package.json` with the scoped `name` (plus `main`/`types` if it has a barrel `index.ts`),
+2. an entry in the root [package.json](package.json) `workspaces` array,
+3. matching `paths` in [tsconfig.json](tsconfig.json),
+4. `npm install` to create the symlink.
+
+A new top-level scope must also be whitelisted in `transformIgnorePatterns` in
+[jest.config.js](jest.config.js), since these workspaces ship untranspiled TS/TSX.
 
 ---
 
@@ -140,40 +165,40 @@ The boilerplate ships with the full **Montserrat** family. Font files live in `s
 
 #### Replace or add fonts
 
-1. **Add font files** to `src/assets/fonts/` (e.g. `Inter-Regular.ttf`).
+1. **Add font files** to `src/assets/fonts/` (e.g. `Inter-Regular.ttf`). That directory is registered
+   as an asset folder in [react-native.config.js](react-native.config.js).
 
-2. **Android** — copy the font files to `android/app/src/main/assets/fonts/`:
+2. **Link them** — this copies to `android/app/src/main/assets/fonts/`, adds the Xcode file
+   references, and regenerates `ios/link-assets-manifest.json` + `android/link-assets-manifest.json`:
 
    ```bash
-   cp src/assets/fonts/Inter-Regular.ttf android/app/src/main/assets/fonts/
+   npx react-native-asset
    ```
 
-   Android resolves fonts from this directory automatically — no further native changes needed.
-
-3. **iOS** — two steps:
-
-   a. Add the font files to the Xcode project:
-
-   - In Xcode, right-click on the `ReactNativeBoilerplate` group → **Add Files to "ReactNativeBoilerplate"**
-   - Select the font files and check **"Add to target"**
-
-   b. Register each font in `ios/ReactNativeBoilerplate/Info.plist` under `UIAppFonts`:
+3. **iOS — register each face in `Info.plist`.** Linking puts the `.ttf` in the bundle but iOS only
+   _loads_ fonts listed under `UIAppFonts`, so add every new face to
+   `ios/ReactNativeBoilerplate/Info.plist`:
 
    ```xml
    <key>UIAppFonts</key>
    <array>
        <string>Inter-Regular.ttf</string>
-       <!-- add more variants here -->
+       <!-- add every variant you shipped -->
    </array>
    ```
 
-4. **Run** `cd ios && pod install` then rebuild.
+   > This is also why the three `FontAwesome6_*.ttf` entries are in that array — `@react-native-vector-icons`
+   > ships its faces via its podspec, but without the `Info.plist` entries the icons silently render as
+   > missing-glyph boxes on iOS while still working on Android. Any additional icon set needs the same treatment.
 
-5. **Use the font in JS** — use the PostScript name (usually `FontFamily-Weight`):
+4. **Rebuild** the app (`cd ios && bundle exec pod install` first if pods changed).
+
+5. **Use the font in JS** — use the PostScript name (usually `FontFamily-Weight`), and prefer adding it
+   to `theme/tokens/typography.ts` over hardcoding:
    ```tsx
    <Text style={{ fontFamily: 'Inter-Regular' }}>Hello</Text>
    ```
-   > Tip: Use `Font.loadAsync` from expo-font or check the PostScript name in Font Book (macOS) if unsure of the exact name.
+   > Tip: check the PostScript name in Font Book (macOS) if unsure of the exact name.
 
 #### Remove unused fonts
 
@@ -183,6 +208,8 @@ To remove the default Montserrat fonts:
 - Remove their entries from `ios/ReactNativeBoilerplate/Info.plist` (`UIAppFonts` array)
 - Remove them from the Xcode project (select files → **Delete** → **Move to Trash**)
 - Delete them from `android/app/src/main/assets/fonts/`
+- Drop their entries from `ios/link-assets-manifest.json` and `android/link-assets-manifest.json`
+- Remove any references from `src/packages/react-native-ui/theme/tokens/typography.ts`
 
 ---
 
@@ -256,13 +283,19 @@ npm run android
 
 ```bash
 # Development (SIT)
-npm run react-native run-android --mode developmentDebug
+npm run android
 
 # Staging (UAT)
-npm run react-native run-android --mode stagingDebug
+npm run android:staging
 
 # Production
-npm run react-native run-android --mode productionDebug
+npm run android:prod
+```
+
+Or invoke the CLI directly (note the `=` and that Metro must be running):
+
+```bash
+npx react-native run-android --mode=stagingDebug --appIdSuffix uat --no-packager
 ```
 
 Or use Android Studio: **Build > Select Build Variant** → choose the desired flavor + build type.
@@ -271,10 +304,19 @@ Or use Android Studio: **Build > Select Build Variant** → choose the desired f
 
 ## Scripts
 
-| Command           | Description                                            |
-| ----------------- | ------------------------------------------------------ |
-| `npm run start`   | Start Metro bundler                                    |
-| `npm run ios`     | Build and run on iOS simulator                         |
-| `npm run android` | Build and run on Android emulator (development flavor) |
-| `npm run test`    | Run Jest tests                                         |
-| `npm run lint`    | Run ESLint                                             |
+| Command                                                    | Description                                            |
+| ---------------------------------------------------------- | ------------------------------------------------------ |
+| `npm start`                                                | Start Metro bundler                                    |
+| `npm run ios`                                              | Build and run on iOS simulator                         |
+| `npm run android`                                          | Build and run on Android emulator (development flavor) |
+| `npm run android:staging`                                  | Run the staging (UAT) flavor                           |
+| `npm run android:prod`                                     | Run the production flavor                              |
+| `npm run android:clean`                                    | `./gradlew clean`                                      |
+| `npm run android:apk:sit` / `:uat` / `npm run android:apk` | Release APK per flavor                                 |
+| `npm run android:aab:sit` / `:uat` / `npm run android:aab` | Release AAB per flavor                                 |
+| `npm test`                                                 | Run Jest tests                                         |
+| `npm run lint`                                             | Run ESLint                                             |
+| `npx tsc --noEmit`                                         | Type check (there is no `tsc` script)                  |
+
+`npm run lint` has 6 pre-existing `react-native/no-inline-styles` warnings (0 errors). They are the
+runtime-theming convention colliding with that rule — that is the expected baseline.
