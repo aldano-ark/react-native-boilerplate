@@ -1,6 +1,6 @@
 # React Native Boilerplate
 
-A React Native CLI starter template with TypeScript, React Navigation 7, NPM (>= 9.0.0) workspaces, custom fonts (Montserrat), and Android product flavors pre-configured.
+A React Native 0.87 CLI starter template with TypeScript, React Navigation 7, NPM (>= 9.0.0) workspaces, custom fonts (Montserrat), and Android product flavors pre-configured.
 
 ## Table of Contents
 
@@ -18,11 +18,12 @@ A React Native CLI starter template with TypeScript, React Navigation 7, NPM (>=
 
 ## Prerequisites
 
-- Node.js >= 22.11.0
+- Node.js `^22.13.0 || ^24.3.0 || >= 26.0.0` (required by React Native 0.87)
 - NPM >= 9.0.0 (workspaces enabled)
 - Ruby (for CocoaPods on iOS)
 - Xcode (iOS)
 - Android Studio + JDK (Android)
+- Android SDK: platform 37, build-tools 37.0.0, NDK 28.2.13676358
 
 ---
 
