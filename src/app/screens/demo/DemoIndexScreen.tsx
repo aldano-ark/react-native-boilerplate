@@ -1,4 +1,5 @@
 import { ScrollView, StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { ListItem, Icon, useTheme } from '@packages/react-native-ui';
 import type {
@@ -54,13 +55,17 @@ const DEMO_ITEMS: Array<{
 ];
 
 export default function DemoIndexScreen() {
+  const insets = useSafeAreaInsets();
   const navigation = useNavigation<Nav>();
   const { colors } = useTheme();
 
   return (
     <ScrollView
       style={{ backgroundColor: colors.background }}
-      contentContainerStyle={styles.content}
+      contentContainerStyle={[
+        styles.content,
+        { paddingBottom: styles.content.paddingBottom + insets.bottom },
+      ]}
     >
       {DEMO_ITEMS.map((item, index) => (
         <ListItem
@@ -84,5 +89,6 @@ export default function DemoIndexScreen() {
 const styles = StyleSheet.create({
   content: {
     flexGrow: 1,
+    paddingBottom: 0,
   },
 });

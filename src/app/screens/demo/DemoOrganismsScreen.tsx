@@ -1,5 +1,8 @@
 import { ScrollView, StyleSheet, View } from 'react-native';
-import { SafeAreaInsetsContext } from 'react-native-safe-area-context';
+import {
+  SafeAreaInsetsContext,
+  useSafeAreaInsets,
+} from 'react-native-safe-area-context';
 import {
   useTheme,
   Header,
@@ -13,12 +16,16 @@ import { DemoSection } from './DemoSection';
 const ZERO_INSETS = { top: 0, bottom: 0, left: 0, right: 0 };
 
 export default function DemoOrganismsScreen() {
+  const insets = useSafeAreaInsets();
   const { colors } = useTheme();
 
   return (
     <ScrollView
       style={{ backgroundColor: colors.background }}
-      contentContainerStyle={styles.content}
+      contentContainerStyle={[
+        styles.content,
+        { paddingBottom: styles.content.paddingBottom + insets.bottom },
+      ]}
     >
       {/*
         The Header organism respects safe-area insets.
