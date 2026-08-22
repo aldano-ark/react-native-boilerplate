@@ -1,4 +1,5 @@
 import { ScrollView, StyleSheet, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   useTheme,
   Card,
@@ -21,12 +22,16 @@ const RADII: RadiusKey[] = ['none', 'sm', 'md', 'lg', 'xl', '2xl'];
 const PADDINGS: SpacingKey[] = [2, 4, 6, 8];
 
 export default function DemoLayoutScreen() {
+  const insets = useSafeAreaInsets();
   const { colors } = useTheme();
 
   return (
     <ScrollView
       style={{ backgroundColor: colors.background }}
-      contentContainerStyle={styles.content}
+      contentContainerStyle={[
+        styles.content,
+        { paddingBottom: styles.content.paddingBottom + insets.bottom },
+      ]}
     >
       <DemoSection title="Card — Shadows">
         {SHADOWS.map(shadow => (

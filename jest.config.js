@@ -1,5 +1,5 @@
 module.exports = {
-  preset: 'react-native',
+  preset: '@react-native/jest-preset',
   moduleNameMapper: {
     // Stub binary/font assets that Jest cannot process
     '\\.ttf$': '<rootDir>/__mocks__/fileMock.js',

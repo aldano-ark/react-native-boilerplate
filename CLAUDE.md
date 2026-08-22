@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-Bare React Native 0.84 / React 19 CLI boilerplate (no Expo) with TypeScript, React Navigation 7 native-stack, i18next, a themed atomic-design UI kit, and Android product flavors. Package manager is **npm** (workspaces); Node >= 22.11.0.
+Bare React Native 0.87 / React 19 CLI boilerplate (no Expo) with TypeScript, React Navigation 7 native-stack, i18next, a themed atomic-design UI kit, and Android product flavors. Package manager is **npm** (workspaces); Node `^22.13.0 || ^24.3.0 || >= 26.0.0`, per RN 0.87.
 
 ## Commands
 
@@ -87,9 +87,12 @@ Enforced by `.github/agents/react-native-dev.agent.md` (read it before larger ch
 - Don't define components inside a render body.
 - Platform differences via `.ios.tsx`/`.android.tsx` suffixes (`moduleSuffixes` is configured) or `Platform.select`.
 - Don't silence errors with `@ts-ignore` or `eslint-disable`.
+- TypeScript is on 6.x, where `baseUrl` is removed — `tsconfig.json` `paths` entries are relative to the tsconfig directory (`./src/...`) and must stay that way.
 
 ## Native / assets gotchas
 
 - Fonts are linked from `src/assets/fonts` via `react-native.config.js` (`npx react-native-asset` regenerates `link-assets-manifest.json`); Jest stubs `.ttf` through `__mocks__/fileMock.js`. Adding a font also means an `Info.plist` `UIAppFonts` entry on iOS. README has the full procedure, plus the rename-the-app checklist.
 - Android flavors are `development` / `staging` / `production` (`android/app/build.gradle`), yielding variants named `<flavor><BuildType>` — `developmentDebug`, `stagingRelease`, `productionDebug`, and so on. Gradle task names follow the same casing (`bundleProductionRelease`, `assembleProductionRelease`); keep the npm scripts and the gradle `debuggableVariants` list in sync with the flavor names whenever a flavor is renamed or added.
 - New flavors must be added to `debuggableVariants` in the `react { }` block or Metro won't attach in debug.
+- `ndkVersion` in `android/build.gradle` is deliberately **ahead** of the RN template pin (28.2.13676358 vs 27.1.12297006). NDK 27.x cannot parse the SDK XML v4 that current cmdline-tools write and fails `:app:configureCMakeDebug` with `CXX5304`. Revisit when the template catches up.
+- Icon fonts need registering twice on iOS: `@react-native-vector-icons` ships its `.ttf` files into the app bundle via its podspec, but iOS only *loads* fonts listed in `Info.plist`'s `UIAppFonts` — the three `FontAwesome6_*.ttf` entries there are what make `Icon` render. Adding another icon set means adding its faces to that array too, or glyphs silently fall back to a missing-glyph box on iOS while still rendering on Android.

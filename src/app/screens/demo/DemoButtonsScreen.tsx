@@ -1,14 +1,19 @@
 import { ScrollView, StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme, Button, Divider, Spacer } from '@packages/react-native-ui';
 import { DemoSection } from './DemoSection';
 
 export default function DemoButtonsScreen() {
+  const insets = useSafeAreaInsets();
   const { colors } = useTheme();
 
   return (
     <ScrollView
       style={{ backgroundColor: colors.background }}
-      contentContainerStyle={styles.content}
+      contentContainerStyle={[
+        styles.content,
+        { paddingBottom: styles.content.paddingBottom + insets.bottom },
+      ]}
     >
       <DemoSection title="Variants">
         <Button variant="primary" label="Primary" />

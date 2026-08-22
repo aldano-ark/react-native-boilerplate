@@ -1,4 +1,5 @@
 import { ScrollView, StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme, Text, Divider, Spacer } from '@packages/react-native-ui';
 import { DemoSection } from './DemoSection';
 import type { TextProps } from '@packages/react-native-ui/atoms/Text/Text.types';
@@ -27,12 +28,16 @@ const WEIGHTS: TextProps['weight'][] = [
 ];
 
 export default function DemoTypographyScreen() {
+  const insets = useSafeAreaInsets();
   const { colors } = useTheme();
 
   return (
     <ScrollView
       style={{ backgroundColor: colors.background }}
-      contentContainerStyle={styles.content}
+      contentContainerStyle={[
+        styles.content,
+        { paddingBottom: styles.content.paddingBottom + insets.bottom },
+      ]}
     >
       <DemoSection title="Variants">
         {VARIANTS.map(variant => (

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   useTheme,
   TextInput,
@@ -10,13 +11,17 @@ import {
 import { DemoSection } from './DemoSection';
 
 export default function DemoFormsScreen() {
+  const insets = useSafeAreaInsets();
   const { colors } = useTheme();
   const [basicValue, setBasicValue] = useState('');
 
   return (
     <ScrollView
       style={{ backgroundColor: colors.background }}
-      contentContainerStyle={styles.content}
+      contentContainerStyle={[
+        styles.content,
+        { paddingBottom: styles.content.paddingBottom + insets.bottom },
+      ]}
       keyboardShouldPersistTaps="handled"
     >
       <DemoSection title="TextInput">
