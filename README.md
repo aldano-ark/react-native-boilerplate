@@ -231,7 +231,7 @@ productFlavors {
 1. Add a new entry in `productFlavors`.
 2. Add it to `debuggableVariants` in the `react { }` block so Metro bundler works correctly in debug:
    ```groovy
-   debuggableVariants = ["developmentDebug", "developmentDebugOptimized", "stagingDebug", "stagingDebugOptimized", "prodDebug", "prodDebugOptimized", "newFlavorDebug", "newFlavorDebugOptimized"]
+   debuggableVariants = ["developmentDebug", "developmentDebugOptimized", "stagingDebug", "stagingDebugOptimized", "productionDebug", "productionDebugOptimized", "newFlavorDebug", "newFlavorDebugOptimized"]
    ```
 3. Run with the new flavor (see [Running the App](#running-the-app)).
 
