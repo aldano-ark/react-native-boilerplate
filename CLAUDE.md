@@ -31,6 +31,12 @@ cd ios && bundle install && bundle exec pod install   # after any native depende
 
 All `android:*` run scripts pass `--no-packager`, so Metro must already be started in another terminal.
 
+### Verification baseline
+
+All three checks pass today, but lint is deliberately **not** warning-free: 6 `react-native/no-inline-styles` warnings (0 errors) in `Avatar`, `Divider`, `Spacer`, `TextInput`. That rule collides head-on with the runtime-theming convention below — leave them alone, treat "6 problems, 0 errors" as the baseline, and only chase warnings you introduced.
+
+Testing is the bare `@react-native/jest-preset` + `react-test-renderer`. `@testing-library/react-native` is **not** installed, so `render`/`screen`/`fireEvent` are unavailable; `__tests__/App.test.tsx` (a mount smoke test inside `ReactTestRenderer.act`) is the only test and the only established pattern. Any component reaching `useTheme()` must be mounted under `ThemeProvider` in a test, as `App` does.
+
 ## Path aliases — how they actually resolve
 
 There is **no babel module-resolver**. `@app/*` and `@packages/*` imports resolve at runtime through npm-workspace symlinks: each aliased directory is itself a workspace with a `package.json` declaring the scoped name (`src/packages/react-native-ui/package.json` → `"name": "@packages/react-native-ui"`). `tsconfig.json` `paths` only mirrors this for the TypeScript compiler.
@@ -68,7 +74,7 @@ index.js → App.tsx → src/Main.tsx → @app/navigation/HomeStack
 
 Each component is a folder of three files — `Foo.tsx`, `Foo.types.ts`, `index.ts` (re-exporting value + types) — barrelled up through `atoms|molecules|organisms/index.ts` into `src/packages/react-native-ui/index.ts`. Consumers import from `@packages/react-native-ui` only.
 
-Theming is runtime, not static: colors come from `useTheme()` and are applied via inline style objects, while layout-only rules live in `StyleSheet.create`. Never hardcode a color into a `StyleSheet`. `ThemeProvider` resolves `forcedScheme ?? manualScheme ?? systemScheme`; `useTheme()` throws outside the provider.
+Theming is runtime, not static: colors come from `useTheme()` and are applied via inline style objects, while layout-only rules live in `StyleSheet.create`. Never hardcode a color into a `StyleSheet`. `ThemeProvider` resolves `forcedScheme ?? manualScheme ?? systemScheme`; `useTheme()` returns `{ colorScheme, colors, setColorScheme }` (that setter drives `manualScheme`, so it is a no-op whenever `ThemeProvider` was given an explicit `colorScheme` prop) and throws outside the provider.
 
 Tokens live in `theme/tokens/` (`colors` light/dark maps over a private `palette`, `spacing`, `radii`, `shadows` platform-selected, `typography` mapping the Montserrat family). Size/spacing values come from tokens, not literals — see `Button.tsx`'s `sizeConfig` for the established shape.
 
@@ -78,7 +84,7 @@ Note `atoms/View` is a `flex: 1` transparent wrapper, not a drop-in for RN's `Vi
 
 ## Code conventions
 
-Enforced by `.github/agents/react-native-dev.agent.md` (read it before larger changes):
+This list is the live source of truth. `.github/agents/react-native-dev.agent.md` (Copilot agent) and `.github/skills/iteration/SKILL.md` (a plan → implement → verify loop) restate the same rules with extra detail — atomic design, composition, no new deps without justification — and are worth reading before larger changes. They were resynced with this file; if they ever drift again, this file wins.
 
 - Functional components only, no class components; no `any`.
 - No `import React from 'react'` — the modern JSX transform handles it (`React` is only imported where its types/APIs are used).
@@ -95,4 +101,4 @@ Enforced by `.github/agents/react-native-dev.agent.md` (read it before larger ch
 - Android flavors are `development` / `staging` / `production` (`android/app/build.gradle`), yielding variants named `<flavor><BuildType>` — `developmentDebug`, `stagingRelease`, `productionDebug`, and so on. Gradle task names follow the same casing (`bundleProductionRelease`, `assembleProductionRelease`); keep the npm scripts and the gradle `debuggableVariants` list in sync with the flavor names whenever a flavor is renamed or added.
 - New flavors must be added to `debuggableVariants` in the `react { }` block or Metro won't attach in debug.
 - `ndkVersion` in `android/build.gradle` is deliberately **ahead** of the RN template pin (28.2.13676358 vs 27.1.12297006). NDK 27.x cannot parse the SDK XML v4 that current cmdline-tools write and fails `:app:configureCMakeDebug` with `CXX5304`. Revisit when the template catches up.
-- Icon fonts need registering twice on iOS: `@react-native-vector-icons` ships its `.ttf` files into the app bundle via its podspec, but iOS only *loads* fonts listed in `Info.plist`'s `UIAppFonts` — the three `FontAwesome6_*.ttf` entries there are what make `Icon` render. Adding another icon set means adding its faces to that array too, or glyphs silently fall back to a missing-glyph box on iOS while still rendering on Android.
+- Icon fonts need registering twice on iOS: `@react-native-vector-icons` ships its `.ttf` files into the app bundle via its podspec, but iOS only _loads_ fonts listed in `Info.plist`'s `UIAppFonts` — the three `FontAwesome6_*.ttf` entries there are what make `Icon` render. Adding another icon set means adding its faces to that array too, or glyphs silently fall back to a missing-glyph box on iOS while still rendering on Android.
